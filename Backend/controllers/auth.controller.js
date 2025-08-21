@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
   try {
@@ -40,6 +40,42 @@ await sendVerificationEmail(newUser.email,verificationToken)
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+export const verifyEmail = async (req, res) => {
+  const { code } = req.body; // Extraction correcte du code
+
+  try {
+    if (!code) {
+      return res.status(400).json({ success: false, message: "Code de vérification requis" });
+    }
+
+    // Recherche de l'utilisateur avec await
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Code de vérification invalide ou expiré" });
+    }
+
+    // Mise à jour de l'utilisateur
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    
+    await user.save();
+
+    // Envoi de l'email de bienvenue (si vous avez cette fonction)
+    if (sendWelcomeEmail) {
+      await sendWelcomeEmail(user.email, user.name);
+    }
+
+    res.status(200).json({ success: true, message: "Email vérifié avec succès !" });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Erreur serveur. Veuillez réessayer plus tard." });
   }
 };
 export const login = async (req, res) => {};
