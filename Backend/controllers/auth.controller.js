@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendVerificationEmail } from "../mailtrap/emails.js";
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
   try {
@@ -28,7 +29,7 @@ export const signup = async (req, res) => {
       verificationTokenExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // expire dans 24h
     });
    generateTokenAndSetCookie(res, newUser._id);
-
+await sendVerificationEmail(newUser.email,verificationToken)
     res.status(201).json({
       message: "User created successfully",
       user: {
