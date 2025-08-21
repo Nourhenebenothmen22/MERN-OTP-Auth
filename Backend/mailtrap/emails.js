@@ -2,6 +2,7 @@
 import nodemailer from "nodemailer";
 import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js";
 import dotenv from "dotenv";
+import { mailtrapClient, sender } from "./mailtrap.config.js";
 
 dotenv.config();
 
@@ -28,6 +29,34 @@ export const sendVerificationEmail = async (email, verificationToken) => {
     return info;
   } catch (error) {
     console.error("❌ Failed to send verification email:", error.message);
+    throw error;
+  }
+};
+export const sendWelcomeEmail = async (email, name) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Votre Application" <no-reply@yourapp.com>',
+      to: email,
+      subject: "Bienvenue sur notre plateforme !",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Bienvenue</title>
+        </head>
+        <body>
+          <h1>Bienvenue, ${name} !</h1>
+          <p>Merci d'avoir vérifié votre email. Votre compte est maintenant activé.</p>
+        </body>
+        </html>
+      `,
+    });
+
+    console.log("Email de bienvenue envoyé: %s", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("❌ Erreur lors de l'envoi de l'email de bienvenue:", error.message);
     throw error;
   }
 };
