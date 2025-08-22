@@ -1,8 +1,7 @@
 // utils/emailSender.js
 import nodemailer from "nodemailer";
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js";
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js";
 import dotenv from "dotenv";
-import { mailtrapClient, sender } from "./mailtrap.config.js";
 
 dotenv.config();
 
@@ -60,3 +59,40 @@ export const sendWelcomeEmail = async (email, name) => {
     throw error;
   }
 };
+export const sendPasswordResetEmail = async (email, resetURL) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Your Application" <no-reply@yourapp.com>',
+      to: email,
+      subject: "Password Reset Request",
+      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{ResetURL}", resetURL),
+      headers: { "X-Category": "Password Reset" } // optional, if you want to keep a category
+    });
+
+    console.log("📩 Password reset email sent to %s (ID: %s)", email, info.messageId);
+    return info;
+  } catch (error) {
+    console.error("❌ Error while sending the password reset email:", error.message);
+    throw error;
+  }
+};
+export const sendResetSuccessEmail = async (email) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Your Application" <no-reply@yourapp.com>',
+      to: email,
+      subject: "Your password has been reset successfully",
+      html: PASSWORD_RESET_SUCCESS_TEMPLATE.replace("{email}", email), // si tu veux personnaliser avec l'email
+      headers: { "X-Category": "Password Reset Success" } // optional
+    });
+
+    console.log("📩 Password reset success email sent to %s (ID: %s)", email, info.messageId);
+    return info;
+  } catch (error) {
+    console.error("❌ Error while sending the password reset success email:", error.message);
+    throw error;
+  }
+};
+
+
+
