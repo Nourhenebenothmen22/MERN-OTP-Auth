@@ -28,8 +28,8 @@ export const signup = async (req, res) => {
       verificationToken,
       verificationTokenExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // expire dans 24h
     });
-   generateTokenAndSetCookie(res, newUser._id);
-await sendVerificationEmail(newUser.email,verificationToken)
+    generateTokenAndSetCookie(res, newUser._id);
+    await sendVerificationEmail(newUser.email, verificationToken);
     res.status(201).json({
       message: "User created successfully",
       user: {
@@ -47,24 +47,31 @@ export const verifyEmail = async (req, res) => {
 
   try {
     if (!code) {
-      return res.status(400).json({ success: false, message: "Verification code is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Verification code is required" });
     }
 
     // Find the user by verification code and check expiration
     const user = await User.findOne({
       verificationToken: code,
-      verificationTokenExpiresAt: { $gt: Date.now() }
+      verificationTokenExpiresAt: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Invalid or expired verification code",
+        });
     }
 
     // Update user fields
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpiresAt = undefined;
-    
+
     await user.save();
 
     // Send welcome email if the function exists
@@ -72,17 +79,78 @@ export const verifyEmail = async (req, res) => {
       await sendWelcomeEmail(user.email, user.name);
     }
 
-    res.status(200).json({ success: true, message: "Email verified successfully!" });
-
+    res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully!" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error. Please try again later.",
+      });
   }
 };
 
-export const login = async (req, res) => {};
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Vérifier si l'utilisateur existe
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Vérifier le mot de passe
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Vérifier si email est confirmé (optionnel)
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email before logging in",
+      });
+    }
+
+    // Générer le token + cookie
+    generateTokenAndSetCookie(res, user._id);
+
+    // Mettre à jour la dernière connexion
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Réponse finale
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
 export const logout = async (req, res) => {
   res.clearCookie("token", {
-     httpOnly: true,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict", // protection CSRF
   });
