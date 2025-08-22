@@ -80,4 +80,14 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const login = async (req, res) => {};
-export const logout = async (req, res) => {};
+export const logout = async (req, res) => {
+  res.clearCookie("token", {
+     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict", // protection CSRF
+  });
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+};
