@@ -206,6 +206,35 @@ export const resetPassword = async (req, res) => {
 };
 
 
+export const checkAuth = async (req, res) => {
+  try {
+    // On récupère l'utilisateur en excluant le mot de passe
+    const user = await User.findById(req.userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Si tout est ok, on renvoie les infos de l'utilisateur
+    res.status(200).json({
+      success: true,
+      user,
+    });
+
+  } catch (error) {
+    console.error("Error in checkAuth:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
+
 export const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
