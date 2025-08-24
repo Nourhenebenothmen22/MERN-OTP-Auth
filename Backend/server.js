@@ -12,8 +12,8 @@ const app = express();
 
 // Configurez CORS avant les autres middlewares
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  origin: 'http://localhost:5173', // Your Vite frontend URL
+  credentials: true // If you're using cookies/auth headers
 }));
 
 app.use(express.json());
