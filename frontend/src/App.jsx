@@ -2,8 +2,10 @@ import { Route, Routes } from "react-router-dom";
 import FloatingShape from "./components/FloatingShape";
 import SignupPage from "./Pages/SignupPage";
 import LoginPage from "./Pages/LoginPage";
+import EmailVerificationPage from "./Pages/EmailVerificationPage";
 
 export default function App() { 
+  
   return( 
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-green-800 to-emerald-800 flex items-center justify-center relative overflow-hidden">
       <FloatingShape color="bg-green-500" size="w-64 h-64" top="-5%" left="10%" delay={0} />
@@ -13,6 +15,8 @@ export default function App() {
         <Route path="/" element={"Home"}/>
         <Route path="/signup" element={<SignupPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/verify-email" element={<EmailVerificationPage/>}/>
+
 
 
       </Routes>
