@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axios from "axios";
-import { resolveElements } from "framer-motion";
 
 const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
 
@@ -97,4 +96,22 @@ export const useAuthStore = create((set) => ({
 			throw error;
 		}
 	},
+	 logout: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await axios.post(`${API_URL}/logout`);
+      set({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Error logging out",
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
 }));
