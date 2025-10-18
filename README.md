@@ -46,19 +46,27 @@ Ce backend fournit toutes les fonctionnalités d’authentification nécessaires
 
 
 2️⃣ Installer les dépendances
+
+
 npm install
 
 3️⃣ Lancer le serveur
 
 En mode développement :
+
+
 npm run dev
 
 En mode production :
+
+
 npm start
 
 🔐 Variables d’environnement
 
 Crée un fichier .env à la racine du dossier Backend :
+
+
 PORT=5000
 MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/mern-auth
 JWT_SECRET=tonsecretjwt
@@ -66,10 +74,13 @@ JWT_EXPIRE=1d
 CLIENT_URL=http://localhost:5173
 
 # Config Mailtrap
+
 SMTP_HOST=sandbox.smtp.mailtrap.io
 SMTP_PORT=587
 SMTP_USER=ton_utilisateur_mailtrap
 SMTP_PASS=ton_motdepasse_mailtrap
+
+
 
 📡 Endpoints principaux
 🔸 Auth Routes → /api/auth
@@ -97,11 +108,19 @@ SMTP_PASS=ton_motdepasse_mailtrap
 | **dotenv**                | Variables d’environnement               |
 | **nodemon**               | Redémarrage automatique en dev          |
 
+
+
 🧩 Dépendances à installer
+
+
 Dépendances principales :
+
+
 npm install express mongoose dotenv cookie-parser cors bcryptjs jsonwebtoken nodemailer 
 
 Dépendances de dev :
+
+
 npm install --save-dev nodemon
 
 
