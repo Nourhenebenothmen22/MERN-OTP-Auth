@@ -44,37 +44,6 @@ Ce backend fournit toutes les fonctionnalités d’authentification nécessaires
 ✅ **Support CORS pour le frontend Vite**  
 ✅ **Utilisation de cookies HTTP-only**
 
----
-
-## 🧱 Structure du projet
-
-Backend/
-│
-├── config/
-│   └── connDB.js
-│
-├── controllers/
-│   └── auth.controller.js
-│
-├── middleware/
-│   ├── auth.middleware.js
-│
-│
-├── models/
-│   └── user.model.js
-│
-├── routes/
-│   └── auth.route.js
-│
-├── utils/
-│   ├── generateTokenAndSetCookie.js
-│   ├── mailtrap.config.js
-│   ├── emails.js
-│   └── emailTemplates.js
-│
-├── .env
-├── server.js
-└── package.json
 
 2️⃣ Installer les dépendances
 npm install
@@ -135,12 +104,15 @@ npm install express mongoose dotenv cookie-parser cors bcryptjs jsonwebtoken nod
 Dépendances de dev :
 npm install --save-dev nodemon
 
-🚀 Exemple de lancement
 
+
+🚀 Exemple de lancement
 > npm run dev
 
 ✅ MongoDB Connected
 🚀 Server running on port 5000
+
+
 
 🧑‍💻 Auteur
 
